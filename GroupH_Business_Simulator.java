@@ -1,95 +1,89 @@
 public class GroupH_Business_Simulator {
 
+    static class Product {
+        private final String name;
+        private final double price;
+        private final int quantity;
+
+        public Product(String name, double price, int quantity) {
+            this.name = name;
+            this.price = price;
+            this.quantity = quantity;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public double getDiscountAmount() {
+            double subtotal = price * quantity;
+            return calculateDiscount(subtotal, quantity, name);
+        }
+
+        public double getSubtotal() {
+            double subtotal = price * quantity;
+            return subtotal - calculateDiscount(subtotal, quantity, name);
+        }
+
+        public boolean hasDiscount() {
+            return getDiscountAmount() > 0;
+        }
+
+        private static double calculateDiscount(double subtotal, int quantity, String productName) {
+            if ("Phone".equalsIgnoreCase(productName) && quantity >= 2) {
+                return subtotal * 0.05;
+            }
+
+            if ("Earphones".equalsIgnoreCase(productName) && quantity >= 4) {
+                return 3000;
+            }
+
+            if ("Power Bank".equalsIgnoreCase(productName) && quantity >= 3) {
+                return subtotal * 0.10;
+            }
+
+            return 0;
+        }
+    }
+
     public static void main(String[] args) {
-       // Arrays storing the product names
-        String[] items = {"Phone", "Charger", "Earphones", "Power Bank"};
-       // Arrays storing the product prices
-        double[] prices = {450000, 15000, 20000, 60000};
-       // Quantities the customer is buying
-        int[] quantities = {1, 2, 3, 3};
+        Product[] products = {
+            new Product("Phone", 450000, 1),
+            new Product("Charger", 15000, 2),
+            new Product("Earphones", 20000, 3),
+            new Product("Power Bank", 60000, 3)
+        };
 
-        // Display the price list
         System.out.println("===== BYTE ELECTRONICS =====");
-      for (int i = 0; i < items.length; i++) {
-            System.out.println(items[i] + " - UGX " + prices[i]);
+        for (Product product : products) {
+            System.out.println(product.getName() + " - UGX " + product.getPrice());
         }
 
-        // Array for storing final subtotals
-        double[] subtotals = new double[4];
-
-        // Array for showing whether a discount was applied
-        boolean[] discounted = new boolean[4];
-
-        // Calculate each item's subtotal
-        for (int i = 0; i < items.length; i++) {
-            subtotals[i] = calculateSubtotal(i, prices[i], quantities[i]);
-            discounted[i] = hasDiscount(i, quantities[i]);
-        }
-
-        // Calculate grand total
         double grandTotal = 0;
-
-        for (int i = 0; i < subtotals.length; i++) {
-            grandTotal = grandTotal + subtotals[i];
+        for (Product product : products) {
+            grandTotal += product.getSubtotal();
         }
-    // Print receipt
-        printReceipt(items, quantities, subtotals, discounted, grandTotal);
+
+        printReceipt(products, grandTotal);
     }
 
-    // Method 1: Calculates the subtotal and applies discounts
-    public static double calculateSubtotal(int itemNumber,double price, int quantity) {
-
-        double subtotal = price * quantity;
-
-        // Phone
-        if (itemNumber == 0 && quantity >= 2) {
-            subtotal = subtotal - (subtotal * 0.05);
-        }
-
-        // Charger has no discount
-
-        // Earphones
-        else if (itemNumber == 2 && quantity >= 4) {
-            subtotal = subtotal - 3000;
-        }
-
-        // Power Bank
-        else if (itemNumber == 3 && quantity >= 3) {
-            subtotal = subtotal - (subtotal * 0.10);
-        }
-
-        return subtotal;
-    }
-
-    // Method 2: Checks whether a discount was applied
-    public static boolean hasDiscount(int itemNumber, int quantity) {
-
-        if (itemNumber == 0 && quantity >= 2) {
-            return true;
-        } else if (itemNumber == 2 && quantity >= 4) {
-            return true;
-        } else if (itemNumber == 3 && quantity >= 3) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // Method 3: Prints the receipt
-    public static void printReceipt(String[] items, int[] quantities, double[] subtotals, boolean[] discounted,double grandTotal) 
-    {
-       System.out.println();
+    public static void printReceipt(Product[] products, double grandTotal) {
+        System.out.println();
         System.out.println("========== RECEIPT ==========");
 
-        for (int i = 0; i < items.length; i++) {
-
-            if (discounted[i]) {
-
-                System.out.println(items[i] + " | Qty: " + quantities[i] + " | Subtotal: UGX " + subtotals[i] + " | Discount Applied" );
-
+        for (Product product : products) {
+            if (product.hasDiscount()) {
+                System.out.println(product.getName() + " | Qty: " + product.getQuantity() + " | Subtotal: UGX " + product.getSubtotal() + " | Discount Applied");
             } else {
-
-                System.out.println(items[i]+ " | Qty: " + quantities[i]+ " | Subtotal: UGX " + subtotals[i] + " | No Discount");
+                System.out.println(product.getName() + " | Qty: " + product.getQuantity() + " | Subtotal: UGX " + product.getSubtotal() + " | No Discount");
             }
         }
 
